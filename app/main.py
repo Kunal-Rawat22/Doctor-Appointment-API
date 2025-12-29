@@ -1,0 +1,14 @@
+from fastapi import FastAPI
+from .core.database import wait_for_db, Base, engine
+
+app = FastAPI()
+
+@app.on_event("startup")
+async def startup():
+    await wait_for_db()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+@app.get("/")
+def root():
+    return {"status": "OK"}
