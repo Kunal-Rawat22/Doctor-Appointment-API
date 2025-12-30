@@ -15,3 +15,11 @@ async def register(email: str, password: str, db: AsyncSession = Depends(get_db)
     db.add(user)
     await db.commit()
     return {"msg": "User created"}
+
+@router.post("/login")
+async def login():
+    pass
+
+@router.put("/forget-password")
+async def forget_password():
+    pass
