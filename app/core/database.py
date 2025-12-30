@@ -18,6 +18,10 @@ AsyncSessionLocal = sessionmaker(
 Base = declarative_base()
 
 
+async def get_db() -> AsyncSession:
+    async with AsyncSessionLocal() as session:
+        yield session
+        
 async def wait_for_db():
     for i in range(10):
         try:

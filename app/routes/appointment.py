@@ -6,7 +6,7 @@ from app.models.user import User
 
 router = APIRouter(prefix="/appointments", tags=["Appointments"])
 
-@router.post()
+@router.post("")
 async def create_appointment():
     pass
 

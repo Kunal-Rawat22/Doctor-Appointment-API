@@ -10,10 +10,7 @@ class Availability(Base):
     __tablename__ = "availabilities"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    doctor_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE")
-    )
-
+    doctor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     start_time: Mapped[datetime]
     end_time: Mapped[datetime]
 
