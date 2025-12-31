@@ -29,12 +29,12 @@ async def get_user_by_id(db: AsyncSession, id: str):
     result = await db.execute(select(User).where(User.id == id))
     return result.scalars().first()
 
-async def get_doctor_by_id(db: AsyncSession, id: str):
+async def get_user_by_id_and_role(db: AsyncSession, id: str, role: UserRole):
     result = await db.execute(
         select(User).where(
             and_(
                 User.id == id,
-                User.role == UserRole.DOCTOR
+                User.role == role
             )
         )
     )

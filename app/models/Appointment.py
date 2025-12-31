@@ -14,7 +14,9 @@ class Appointment(Base):
     patient_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     start_time: Mapped[datetime]
     end_time: Mapped[datetime]
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now())
+    deleted: Mapped[bool] = mapped_column(default=False)
+    availability_id: Mapped[int]
 
     patient = relationship(
         "User",

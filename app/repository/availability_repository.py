@@ -1,10 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.security import hash_password, create_access_token
 from app.models.Availability import Availability
-from ..schemas import userSchema
 from sqlalchemy import select, and_
-from ..models.enums import UserRole
 from datetime import datetime
 
 async def save_availability(db: AsyncSession, availability: Availability):
@@ -30,3 +26,12 @@ async def fetch_all_availability_of_doctor_by_id(doctor_id: int, limit: int, off
 
     result = await db.execute(query)
     return result.scalars().all()
+
+async def get_availability_by_id(db: AsyncSession, id: str):
+    result = await db.execute(select(Availability).where(Availability.id == id))
+    return result.scalars().first()
+
+async def update_availability(db: AsyncSession, availability: Availability):
+    await db.commit()
+    await db.refresh(availability)
+    return availability
