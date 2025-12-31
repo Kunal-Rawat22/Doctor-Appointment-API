@@ -10,10 +10,10 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 async def register(request: userSchema.UserRequestCO, db: AsyncSession = Depends(get_db)):
     return await user_service.create_user(db, request)
 
-@router.post("/login")
-async def login():
-    pass
+@router.post("/login", status_code=status.HTTP_200_OK)
+async def login(request: userSchema.UserLoginRequestCO, db: AsyncSession = Depends(get_db)):
+    return await user_service.login_user(db, request)
 
-@router.put("/forget-password")
-async def forget_password():
-    pass
+@router.put("/forget-password", status_code=status.HTTP_200_OK)
+async def forget_password(request: userSchema.UserForgetPasswordCO, db: AsyncSession = Depends(get_db)):
+    return await user_service.forget_password(db, request)

@@ -15,3 +15,8 @@ class UserResponseDTO(BaseModel):
 class UserLoginRequestCO(BaseModel):
     email: str
     password: str
+
+class UserForgetPasswordCO(BaseModel):
+    email: str
+    new_password: str
+    otp: str

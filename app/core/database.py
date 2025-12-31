@@ -21,13 +21,13 @@ Base = declarative_base()
 async def get_db() -> AsyncSession:
     async with AsyncSessionLocal() as session:
         yield session
-        
+
 async def wait_for_db():
     for i in range(10):
         try:
             async with engine.connect() as conn:
                 return
         except OperationalError:
-            print(f"⏳ Waiting for DB... ({i+1}/10)")
+            print(f"Waiting for DB... ({i+1}/10)")
             await asyncio.sleep(2)
     raise Exception("Database not ready after waiting")

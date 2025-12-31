@@ -1,13 +1,13 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.security import hash_password, create_access_token
+from app.core.security import hash_password, create_access_token, verify_password
 from app.models.user import User
 from ..schemas import userSchema
 from ..repository import user_repository
 
 async def create_user(db: AsyncSession, user: userSchema.UserRequestCO):
-    # Check if user exists
-    if 'doctor' != user.role or 'patient' != user.role:
+    print(user)
+    if 'DOCTOR' != user.role and 'PATIENT' != user.role:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Role")
  
     existing_user = await user_repository.get_user_by_email(db, user.email)
@@ -20,7 +20,24 @@ async def create_user(db: AsyncSession, user: userSchema.UserRequestCO):
         hashed_password=hash_password(user.password),
         role=user.role
     )
-    db.add(db_user)
-    await db.commit()
-    await db.refresh(db_user)
-    return db_user
+    return user_repository.save_user(db, db_user)
+
+async def login_user(db: AsyncSession, request: userSchema.UserLoginRequestCO):
+    existing_user = await user_repository.get_user_by_email(db, request.email)
+    if not existing_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Credentials")
+    if not verify_password(request.password, existing_user.hashed_password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Credentials")
+    access_token = create_access_token(data={'sub': existing_user.email})
+    return {'access_token': access_token, "token_type": "bearer"}
+
+async def forget_password(db: AsyncSession, request: userSchema.UserForgetPasswordCO):
+    existing_user = await user_repository.get_user_by_email(db, request.email)
+    if not existing_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid OTP")
+    if request.otp != '123456':
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid OTP")
+    existing_user.hashed_password = hash_password(request.new_password)
+    await user_repository.update_user(db, existing_user)
+    return {"message":"Password Updated Successfully"}
+    
