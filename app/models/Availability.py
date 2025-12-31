@@ -13,5 +13,7 @@ class Availability(Base):
     doctor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     start_time: Mapped[datetime]
     end_time: Mapped[datetime]
-
+    max_appointments: Mapped[int]
+    booked_appointments: Mapped[int] = mapped_column(default=0)
     doctor = relationship("User", back_populates="availabilities")
+
