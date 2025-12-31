@@ -67,3 +67,16 @@ async def fetch_all_doctor_upcoming_appointments(doctor_id:int, limit:int, offse
 
 async def fetch_all_patient_upcoming_appointments(patient_id:int, limit:int, offset:int, db: AsyncSession):
     return await appointment_repository.fetch_all_patient_upcoming_appointments(patient_id, limit, offset, datetime.now(), db)
+
+async def cancel_apppointment(appointment_id: int, patient_id: int, db: AsyncSession):
+    appointment = await appointment_repository.fetch_by_patient_id_and_appointment_id(patient_id, appointment_id, db)
+    if not appointment:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Appointment doesn't exist")
+    appointment.deleted=True
+
+    availability = await availability_repository.get_availability_by_id(db, appointment.availability_id)
+    availability.booked_appointments-=1
+    await availability_repository.update_availability(db, availability)
+
+    await appointment_repository.update_appointment(db, appointment)
+    return {'message':"Appointment cancelled Successfully"}

@@ -45,7 +45,8 @@ async def fetch_all_doctor_upcoming_appointments(doctor_id:int, limit:int, offse
             .where(
                 and_(
                     Appointment.doctor_id == doctor_id,
-                    Appointment.start_time >= current_time
+                    Appointment.start_time >= current_time,
+                    Appointment.deleted == False
                 )
             )
             .order_by(Appointment.id)
@@ -65,7 +66,8 @@ async def fetch_all_patient_upcoming_appointments(patient_id:int, limit:int, off
             .where(
                 and_(
                     Appointment.patient_id == patient_id,
-                    Appointment.start_time >= current_time
+                    Appointment.start_time >= current_time,
+                    Appointment.deleted == False
                 )
             )
             .order_by(Appointment.id)
@@ -74,3 +76,26 @@ async def fetch_all_patient_upcoming_appointments(patient_id:int, limit:int, off
         )
     result = await db.execute(query)
     return result.scalars().all()
+
+async def fetch_by_patient_id_and_appointment_id(patient_id:int, appointment_id:int, db: AsyncSession):
+    query = (
+            select(Appointment)
+            .options(
+                selectinload(Appointment.patient),
+                selectinload(Appointment.doctor)
+            )
+            .where(
+                and_(
+                    Appointment.patient_id == patient_id,
+                    Appointment.id == appointment_id,
+                    Appointment.deleted == False
+                )
+            )
+        )
+    result = await db.execute(query)
+    return result.scalars().first()
+
+async def update_appointment(db: AsyncSession, appointment: Appointment):
+    await db.commit()
+    await db.refresh(appointment)
+    return appointment
