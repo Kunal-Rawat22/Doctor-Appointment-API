@@ -34,3 +34,43 @@ async def save_appointment(db: AsyncSession, appointment: Appointment):
     )
 
     return result.scalars().first()
+
+async def fetch_all_doctor_upcoming_appointments(doctor_id:int, limit:int, offset:int, current_time: datetime, db: AsyncSession):
+    query = (
+            select(Appointment)
+            .options(
+                selectinload(Appointment.patient),
+                selectinload(Appointment.doctor)
+            )
+            .where(
+                and_(
+                    Appointment.doctor_id == doctor_id,
+                    Appointment.start_time >= current_time
+                )
+            )
+            .order_by(Appointment.id)
+            .offset(offset)
+            .limit(limit)
+        )
+    result = await db.execute(query)
+    return result.scalars().all()
+
+async def fetch_all_patient_upcoming_appointments(patient_id:int, limit:int, offset:int, current_time: datetime, db: AsyncSession):
+    query = (
+            select(Appointment)
+            .options(
+                selectinload(Appointment.patient),
+                selectinload(Appointment.doctor)
+            )
+            .where(
+                and_(
+                    Appointment.patient_id == patient_id,
+                    Appointment.start_time >= current_time
+                )
+            )
+            .order_by(Appointment.id)
+            .offset(offset)
+            .limit(limit)
+        )
+    result = await db.execute(query)
+    return result.scalars().all()

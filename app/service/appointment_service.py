@@ -61,3 +61,9 @@ async def verify_consistent_booking_with_availability(db: AsyncSession, end_time
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"No. of booked appointments has exceeded max appointments")
     
     return availability
+
+async def fetch_all_doctor_upcoming_appointments(doctor_id:int, limit:int, offset:int, db: AsyncSession):
+    return await appointment_repository.fetch_all_doctor_upcoming_appointments(doctor_id, limit, offset, datetime.now(), db)
+
+async def fetch_all_patient_upcoming_appointments(patient_id:int, limit:int, offset:int, db: AsyncSession):
+    return await appointment_repository.fetch_all_patient_upcoming_appointments(patient_id, limit, offset, datetime.now(), db)
