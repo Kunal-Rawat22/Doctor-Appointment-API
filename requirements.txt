@@ -7,3 +7,4 @@ python-jose[cryptography]
 python-dotenv
 pydantic-settings
 pytest
+python-multipart

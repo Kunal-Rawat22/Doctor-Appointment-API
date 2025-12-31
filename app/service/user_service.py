@@ -23,7 +23,7 @@ async def create_user(db: AsyncSession, user: userSchema.UserRequestCO):
     return await user_repository.save_user(db, db_user)
 
 async def login_user(db: AsyncSession, request: userSchema.UserLoginRequestCO):
-    existing_user = await user_repository.get_user_by_email(db, request.email)
+    existing_user = await user_repository.get_user_by_email(db, request.username)
     if not existing_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Credentials")
     if not verify_password(request.password, existing_user.hashed_password):

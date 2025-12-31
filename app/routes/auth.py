@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..core.database import get_db
 from ..schemas import userSchema
 from ..service import user_service
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -11,7 +12,7 @@ async def register(request: userSchema.UserRequestCO, db: AsyncSession = Depends
     return await user_service.create_user(db, request)
 
 @router.post("/login", status_code=status.HTTP_200_OK)
-async def login(request: userSchema.UserLoginRequestCO, db: AsyncSession = Depends(get_db)):
+async def login(request: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     return await user_service.login_user(db, request)
 
 @router.put("/forget-password", status_code=status.HTTP_200_OK)
