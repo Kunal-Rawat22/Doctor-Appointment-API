@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import hash_password, create_access_token, verify_password
 from app.models.user import User
@@ -20,7 +20,7 @@ async def create_user(db: AsyncSession, user: userSchema.UserRequestCO):
         hashed_password=hash_password(user.password),
         role=user.role
     )
-    return user_repository.save_user(db, db_user)
+    return await user_repository.save_user(db, db_user)
 
 async def login_user(db: AsyncSession, request: userSchema.UserLoginRequestCO):
     existing_user = await user_repository.get_user_by_email(db, request.email)
@@ -34,7 +34,7 @@ async def login_user(db: AsyncSession, request: userSchema.UserLoginRequestCO):
 async def forget_password(db: AsyncSession, request: userSchema.UserForgetPasswordCO):
     existing_user = await user_repository.get_user_by_email(db, request.email)
     if not existing_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid OTP")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     if request.otp != '123456':
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid OTP")
     existing_user.hashed_password = hash_password(request.new_password)
