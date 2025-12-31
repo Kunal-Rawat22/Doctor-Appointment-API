@@ -7,4 +7,6 @@ python-jose[cryptography]
 python-dotenv
 pydantic-settings
 pytest
+pytest-asyncio
+aiosqlite
 python-multipart

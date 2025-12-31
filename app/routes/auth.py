@@ -15,6 +15,6 @@ async def register(request: userSchema.UserRequestCO, db: AsyncSession = Depends
 async def login(request: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     return await user_service.login_user(db, request)
 
-@router.put("/forget-password", status_code=status.HTTP_200_OK)
+@router.put("/forgot-password", status_code=status.HTTP_200_OK)
 async def forget_password(request: userSchema.UserForgetPasswordCO, db: AsyncSession = Depends(get_db)):
     return await user_service.forget_password(db, request)
